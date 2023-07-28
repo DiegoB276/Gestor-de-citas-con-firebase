@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:citas_firebase/models/connection.dart';
+import 'package:citas_firebase/models/constants_and_variables.dart';
 import 'package:citas_firebase/models/fierbase_controller.dart';
+import 'package:citas_firebase/widgets/ad_banner.dart';
 import 'package:citas_firebase/widgets/my_drawer.dart';
 import 'package:citas_firebase/widgets/my_snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,6 +31,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
   late String date = '';
   late String time = '';
   late String dateAuxP = '';
+  late AdmobInterstitial adIntersticial;
 
   late TextEditingController nameController;
   late TextEditingController documentController;
@@ -58,7 +63,18 @@ class _HomePageMobileState extends State<HomePageMobile> {
     phoneController = TextEditingController();
     priceController = TextEditingController();
     indicatorValue = DateTime.now().second / 60;
+
     updateSeconds();
+
+    adIntersticial = AdmobInterstitial(
+      adUnitId: adInterstitialAndroidId,
+      listener: (AdmobAdEvent event, Map<String, dynamic>? args) {
+        if (event == AdmobAdEvent.closed) {
+          adIntersticial.load();
+        }
+      },
+    );
+    adIntersticial.load();
   }
 
   @override
@@ -75,6 +91,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
       dateAuxP = dateP;
     });
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 253, 251, 255),
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(48, 204, 176, 1),
         title: const Text('Bienvenido'),
@@ -92,7 +109,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
                 color: Colors.black,
               ),
             ),
-          )
+          ),
         ],
       ),
       drawer: const MyDrawer(),
@@ -253,7 +270,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
                           : MediaQuery.of(context).size.width * 0.30,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 253, 251, 255),
                         borderRadius: BorderRadius.circular(7),
                         border: const Border(
                           bottom: BorderSide(
@@ -296,7 +313,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
                   width: MediaQuery.of(context).size.width * 0.40,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 253, 251, 255),
                     borderRadius: BorderRadius.circular(7),
                     border: const Border(
                       bottom:
@@ -461,7 +478,11 @@ class _HomePageMobileState extends State<HomePageMobile> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        submitAddEvent();
+                        if (counterAd == 2) {
+                          LaunchAdToFiveTouch();
+                        } else {
+                          submitAddEvent();
+                        }
                       },
                       child: Container(
                         height: 60,
@@ -511,6 +532,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
           ),
         ),
       ),
+      bottomNavigationBar: BannerAd(),
     );
   }
 
@@ -550,7 +572,8 @@ class _HomePageMobileState extends State<HomePageMobile> {
   }
 
   void submitAddEvent() async {
-    if (validateCamps() == false) {
+    if(await validateConnection()){
+      if (validateCamps() == false) {
       Future.delayed(const Duration(milliseconds: 200)).then(
         (value) {
           launchSnackBar(
@@ -569,6 +592,22 @@ class _HomePageMobileState extends State<HomePageMobile> {
     } else {
       launchSnackBar(context, 'Hay Campos Vacios', Colors.brown);
     }
+    }else{
+      launchSnackBar(context, 'Sin conexión a internet', Colors.brown);
+    }
+    
+  }
+
+  Future<void> LaunchAdToFiveTouch() async {
+    final isLoaded = await adIntersticial.isLoaded;
+    if (isLoaded ?? false) {
+      adIntersticial.show();
+      setState(() {
+        counterAd = 0;
+      });
+    } else {
+      print('Ad Loading...');
+    }
   }
 
   void clearCamps() async {
@@ -583,6 +622,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
         time = '';
         priceController.clear();
         code = generateCodeRandom();
+        counterAd++;
       });
     } else {
       clearCamps();

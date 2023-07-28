@@ -1,8 +1,6 @@
 import 'package:citas_firebase/pages/search_meeting_page.dart';
 import 'package:citas_firebase/pages/today_meetings_page.dart';
 import 'package:flutter/material.dart';
-import '../pages/download_page.dart';
-
 class MyDrawer extends StatelessWidget {
   const MyDrawer({
     super.key,
@@ -57,29 +55,11 @@ class MyDrawer extends StatelessWidget {
               );
             },
             leading: const Icon(
-              Icons.question_mark,
+              Icons.search,
               size: 25,
             ),
             title: const Text(
               "Buscar Cita",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const DownloadPage(),
-                ),
-              );
-            },
-            leading: const Icon(
-              Icons.download,
-              size: 25,
-            ),
-            title: const Text(
-              "Descargar Datos",
               style: TextStyle(fontSize: 20),
             ),
           ),

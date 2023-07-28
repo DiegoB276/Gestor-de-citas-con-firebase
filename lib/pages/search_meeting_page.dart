@@ -1,3 +1,4 @@
+import 'package:citas_firebase/widgets/ad_banner.dart';
 import 'package:citas_firebase/widgets/meetings.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -15,6 +16,7 @@ class _MeetingSearchPageState extends State<MeetingSearchPage> {
   late TextEditingController searchController;
   var query = FirebaseDatabase.instance.ref().child("Posts");
   late var resultTextField = '';
+  late String total = '';
 
   @override
   void initState() {
@@ -98,17 +100,18 @@ class _MeetingSearchPageState extends State<MeetingSearchPage> {
                 child: FirebaseAnimatedList(
                   query: query,
                   itemBuilder: (context, snapshot, animation, index) {
-                    Map event = snapshot.value as Map;
-                    event['key'] = snapshot.key;
-                    if (event['document'] == resultTextField) {
+                    Map meet = snapshot.value as Map;
+                    meet['key'] = snapshot.key;
+
+                    if (meet['document'] == resultTextField) {
                       return ItemMeetingDone(
-                        idP: event['id'],
-                        nameP: event['name'],
-                        docP: event['document'],
-                        dateP: event['date'],
-                        timeP: event['hour'],
-                        typeP: event['type_doc'],
-                        priceP: event['price'],
+                        idP: meet['id'],
+                        nameP: meet['name'],
+                        docP: meet['document'],
+                        dateP: meet['date'],
+                        timeP: meet['hour'],
+                        typeP: meet['type_doc'],
+                        priceP: meet['price'],
                       );
                     }
                     return const SizedBox.shrink();
@@ -119,6 +122,7 @@ class _MeetingSearchPageState extends State<MeetingSearchPage> {
           ),
         ),
       ),
+       bottomNavigationBar: BannerAd(),
     );
   }
 }
