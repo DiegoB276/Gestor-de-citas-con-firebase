@@ -1,3 +1,4 @@
+import 'package:citas_firebase/pages/search_by_date_page.dart';
 import 'package:citas_firebase/pages/search_meeting_page.dart';
 import 'package:citas_firebase/pages/today_meetings_page.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,23 @@ class MyDrawer extends StatelessWidget {
             ),
           ),
           const Divider(),
+          ListTile(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SearchByDatePage(),
+                ),
+              );
+            },
+            leading: const Icon(
+              Icons.search,
+              size: 25,
+            ),
+            title: const Text(
+              "Buscar por Fecha",
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
         ],
       ),
     );

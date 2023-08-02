@@ -1,3 +1,4 @@
+import 'package:citas_firebase/models/fierbase_controller.dart';
 import 'package:citas_firebase/widgets/ad_banner.dart';
 import 'package:citas_firebase/widgets/meetings.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -16,7 +17,6 @@ class _MeetingSearchPageState extends State<MeetingSearchPage> {
   late TextEditingController searchController;
   var query = FirebaseDatabase.instance.ref().child("Posts");
   late var resultTextField = '';
-  late String total = '';
 
   @override
   void initState() {
@@ -111,7 +111,12 @@ class _MeetingSearchPageState extends State<MeetingSearchPage> {
                         dateP: meet['date'],
                         timeP: meet['hour'],
                         typeP: meet['type_doc'],
+                        cellphone: meet['phone'],
                         priceP: meet['price'],
+                        payStatus: meet['status_pay'],
+                        changeStatusPayMeet: (p0) {
+                          changeStatusPay(query, meet['key']);
+                        },
                       );
                     }
                     return const SizedBox.shrink();
@@ -122,7 +127,7 @@ class _MeetingSearchPageState extends State<MeetingSearchPage> {
           ),
         ),
       ),
-       bottomNavigationBar: BannerAd(),
+      bottomNavigationBar: BannerAd(),
     );
   }
 }

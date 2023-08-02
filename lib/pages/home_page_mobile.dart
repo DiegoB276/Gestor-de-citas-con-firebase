@@ -28,6 +28,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
   var dateMonth = DateTime.now().month;
   var dateYear = DateTime.now().year;
   late String typeDoc = '';
+  late String statusPay = '';
   late String date = '';
   late String time = '';
   late String dateAuxP = '';
@@ -38,6 +39,7 @@ class _HomePageMobileState extends State<HomePageMobile> {
   late TextEditingController phoneController;
   late TextEditingController priceController;
   List<String> listaDeOpciones = ["CC", "TI", "Contraseña"];
+  List<String> listStatusPayMeet = ['No', 'Si'];
 
   //Retorna un TimeOfDay y lo formatea segun el contexto en el que se encuentre.
   String timeP(BuildContext context) {
@@ -297,41 +299,86 @@ class _HomePageMobileState extends State<HomePageMobile> {
               const SizedBox(
                 height: 20,
               ),
-              GestureDetector(
-                onTap: () async {
-                  TimeOfDay? timePicked = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  );
-                  if (timePicked != null) {
-                    time =
-                        // ignore: use_build_context_synchronously
-                        timePicked.format(context).toString();
-                  }
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.40,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 253, 251, 255),
-                    borderRadius: BorderRadius.circular(7),
-                    border: const Border(
-                      bottom:
-                          BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
-                      top: BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
-                      right:
-                          BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
-                      left: BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      TimeOfDay? timePicked = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+                      if (timePicked != null) {
+                        time =
+                            // ignore: use_build_context_synchronously
+                            timePicked.format(context).toString();
+                      }
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.40,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 253, 251, 255),
+                        borderRadius: BorderRadius.circular(7),
+                        border: const Border(
+                          bottom:
+                              BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
+                          top: BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
+                          right:
+                              BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
+                          left: BorderSide(color: Color.fromRGBO(135, 158, 237, 1)),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          time.isEmpty ? 'Hora Cita' : time,
+                          style:
+                              TextStyle(fontSize: 17, color: Colors.grey.shade700),
+                        ),
+                      ),
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      time.isEmpty ? 'Hora Cita' : time,
-                      style:
-                          TextStyle(fontSize: 17, color: Colors.grey.shade700),
+                  SizedBox(
+                    height: 60,
+                    width: widthScreen
+                        ? MediaQuery.of(context).size.width * 0.40
+                        : MediaQuery.of(context).size.width * 0.30,
+                    child: DropdownButtonFormField(
+                      hint: const Text("¿Pagado?"),
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(135, 158, 237, 1),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(135, 158, 237, 1),
+                          ),
+                        ),
+                      ),
+                      items: listStatusPayMeet.map((e) {
+                        return DropdownMenuItem(
+                          value: e,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              e,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      isDense: true,
+                      isExpanded: true,
+                      onChanged: (String? value) {
+                        statusPay = value!;
+                      },
                     ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(
                 height: 50,
@@ -555,13 +602,14 @@ class _HomePageMobileState extends State<HomePageMobile> {
       nameController.text,
       typeDoc,
       documentController.text,
-      int.parse(phoneController.text),
+      phoneController.text,
       date,
       time,
       int.parse(priceController.text),
       code,
       dateAuxP,
       timeP(context),
+      statusPay,
     );
 
     if (dataWasUpload) {
